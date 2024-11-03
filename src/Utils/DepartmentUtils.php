@@ -65,6 +65,10 @@ class DepartmentUtils
             ]
         ])['UF_DEPARTMENT'];
 
+        if (empty($departments)) {
+            return [];
+        }
+
         if ($recursive) {
             foreach ($departments as $department) {
                 $headDepartments = CIBlockSection::GetNavChain(static::getStructureIBlockID(), $department, ['ID'], true);
@@ -88,6 +92,10 @@ class DepartmentUtils
      */
     public static function isDepartmentHead(int $userId): bool
     {
+        if (empty($userId)) {
+            return false;
+        }
+
         $dbRes = CIBlockSection::GetList([],
             [
                 'IBLOCK_ID' => static::getStructureIBlockID(),
@@ -114,6 +122,10 @@ class DepartmentUtils
      */
     public static function isInDepartment(int $userId, $department): bool
     {
+        if (empty($userId)) {
+            return false;
+        }
+
         $departments = UserTable::getRow([
             'filter' => [
                 'ID' => $userId,
@@ -122,6 +134,10 @@ class DepartmentUtils
                 'UF_DEPARTMENT',
             ]
         ])['UF_DEPARTMENT'];
+
+        if (empty($departments)) {
+            return false;
+        }
 
         if (is_numeric($department)) {
             $departmentId = $department;
