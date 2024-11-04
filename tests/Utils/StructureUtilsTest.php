@@ -5,9 +5,9 @@ namespace Yognevoy\BXUtils\Tests\Utils;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use Yognevoy\BXUtils\Exception\ModuleNotIncludedException;
-use Yognevoy\BXUtils\Utils\DepartmentUtils;
+use Yognevoy\BXUtils\Utils\StructureUtils;
 
-class TestableDepartmentUtils extends DepartmentUtils
+class TestableStructureUtils extends StructureUtils
 {
     protected static function getStructureIBlockID(): int
     {
@@ -15,7 +15,7 @@ class TestableDepartmentUtils extends DepartmentUtils
     }
 }
 
-class DepartmentUtilsTest extends TestCase
+class StructureUtilsTest extends TestCase
 {
     protected function tearDown(): void
     {
@@ -35,7 +35,7 @@ class DepartmentUtilsTest extends TestCase
         $this->expectException(ModuleNotIncludedException::class);
         $this->expectExceptionMessage('intranet');
 
-        DepartmentUtils::getDepartmentUsers($departmentId);
+        StructureUtils::getDepartmentUsers($departmentId);
     }
 
     public function testGetDepartmentUsersReturnsUserIds()
@@ -62,7 +62,7 @@ class DepartmentUtilsTest extends TestCase
                 false
             );
 
-        $result = DepartmentUtils::getDepartmentUsers($departmentId);
+        $result = StructureUtils::getDepartmentUsers($departmentId);
 
         $expected = [1, 2];
         $this->assertSame($expected, $result);
@@ -90,7 +90,7 @@ class DepartmentUtilsTest extends TestCase
             ->with([10])
             ->andReturn([['ID' => 1], ['ID' => 2]]);
 
-        $result = DepartmentUtils::getUserManagers($userId);
+        $result = StructureUtils::getUserManagers($userId);
 
         $this->assertEquals([1, 2], $result);
     }
@@ -108,7 +108,7 @@ class DepartmentUtilsTest extends TestCase
             ->with([], ['IBLOCK_ID' => 3, 'UF_HEAD' => $userId])
             ->andReturn($dbResultMock);
 
-        $result = TestableDepartmentUtils::isDepartmentHead($userId);
+        $result = TestableStructureUtils::isDepartmentHead($userId);
         $this->assertTrue($result);
     }
 
@@ -125,7 +125,7 @@ class DepartmentUtilsTest extends TestCase
             ->with([], ['IBLOCK_ID' => 3, 'UF_HEAD' => $userId])
             ->andReturn($dbResultMock);
 
-        $result = TestableDepartmentUtils::isDepartmentHead($userId);
+        $result = TestableStructureUtils::isDepartmentHead($userId);
         $this->assertFalse($result);
     }
 
@@ -145,7 +145,7 @@ class DepartmentUtilsTest extends TestCase
             ])
             ->andReturn(['UF_DEPARTMENT' => $userDepartments]);
 
-        $result = TestableDepartmentUtils::isInDepartment($userId, $departmentId);
+        $result = TestableStructureUtils::isInDepartment($userId, $departmentId);
         $this->assertTrue($result);
     }
 
@@ -165,7 +165,7 @@ class DepartmentUtilsTest extends TestCase
             ])
             ->andReturn(['UF_DEPARTMENT' => $userDepartments]);
 
-        $result = TestableDepartmentUtils::isInDepartment($userId, $departmentId);
+        $result = TestableStructureUtils::isInDepartment($userId, $departmentId);
         $this->assertFalse($result);
     }
 
@@ -196,7 +196,7 @@ class DepartmentUtilsTest extends TestCase
             ->with($userId, false)
             ->andReturn($mockedDBResult);
 
-        $result = TestableDepartmentUtils::getSubordinateIds($userId, false);
+        $result = TestableStructureUtils::getSubordinateIds($userId, false);
         $this->assertSame($subordinateIds, $result);
     }
 
@@ -220,7 +220,7 @@ class DepartmentUtilsTest extends TestCase
             ->with($userId, false)
             ->andReturn($mockedDBResult);
 
-        $result = TestableDepartmentUtils::getSubordinateIds($userId, false);
+        $result = TestableStructureUtils::getSubordinateIds($userId, false);
         $this->assertSame([], $result);
     }
 }

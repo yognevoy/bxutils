@@ -13,7 +13,7 @@ use Bitrix\Main\UserTable;
 use CIBlockSection;
 use Yognevoy\BXUtils\Exception\ModuleNotIncludedException;
 
-class DepartmentUtils
+class StructureUtils
 {
     /**
      * Returns users who are members of the department.
