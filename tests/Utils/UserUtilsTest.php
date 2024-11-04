@@ -50,6 +50,49 @@ class UserUtilsTest extends TestCase
         UserUtils::getFullName($userId);
     }
 
+    public function testGetProfileUrlReturnsProfileUrl()
+    {
+        $userId = 2;
+        $profileUrl = UserUtils::getProfileUrl($userId);
+        $this->assertEquals('/company/personal/user/2/', $profileUrl);
+    }
+
+    public function testGetProfilePictureUrlReturnsUrlWhenPictureExists()
+    {
+        $userId = 3;
+        $photoId = 456;
+        $expectedUrl = '/upload/user_photo.jpg';
+
+        $userTableMock = Mockery::mock('alias:Bitrix\Main\UserTable');
+        $userTableMock->shouldReceive('getRow')
+            ->once()
+            ->with(['filter' => ['=ID' => $userId], 'select' => ['PERSONAL_PHOTO']])
+            ->andReturn(['PERSONAL_PHOTO' => $photoId]);
+
+        $cFileMock = Mockery::mock('alias:CFile');
+        $cFileMock->shouldReceive('GetPath')
+            ->once()
+            ->with($photoId)
+            ->andReturn($expectedUrl);
+
+        $result = UserUtils::getProfilePictureUrl($userId);
+        $this->assertSame($expectedUrl, $result);
+    }
+
+    public function testGetProfilePictureUrlReturnsNullWhenPictureNotFound()
+    {
+        $userId = 3;
+
+        $userTableMock = Mockery::mock('alias:Bitrix\Main\UserTable');
+        $userTableMock->shouldReceive('getRow')
+            ->once()
+            ->with(['filter' => ['=ID' => $userId], 'select' => ['PERSONAL_PHOTO']])
+            ->andReturn(['PERSONAL_PHOTO' => null]);
+
+        $result = UserUtils::getProfilePictureUrl($userId);
+        $this->assertNull($result);
+    }
+
     public function testIsInGroupReturnsTrueForUserInNumericGroup()
     {
         $userId = 1;

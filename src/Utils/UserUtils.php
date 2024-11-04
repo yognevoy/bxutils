@@ -47,6 +47,47 @@ class UserUtils
     }
 
     /**
+     * Returns a link to the user's profile.
+     *
+     * @param int $userId
+     * @return string|null
+     */
+    public static function getProfileUrl(int $userId): ?string
+    {
+        if (!empty($userId)) {
+            return "/company/personal/user/$userId/";
+        }
+        return null;
+    }
+
+    /**
+     * Returns a link to the user's avatar.
+     *
+     * @param int $userId
+     * @return string|null
+     * @throws ArgumentException
+     * @throws ObjectPropertyException
+     * @throws SystemException
+     */
+    public static function getProfilePictureUrl(int $userId): ?string
+    {
+        if (!empty($userId)) {
+            $pictureId = UserTable::getRow([
+                'filter' => [
+                    '=ID' => $userId,
+                ],
+                'select' => [
+                    'PERSONAL_PHOTO',
+                ]
+            ])['PERSONAL_PHOTO'];
+            if ($pictureId) {
+                return \CFile::GetPath($pictureId);
+            }
+        }
+        return null;
+    }
+
+    /**
      * Returns user view HTML
      *
      * @param int $userId
