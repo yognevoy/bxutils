@@ -1,0 +1,20 @@
+{
+    "name": "yognevoy/bxutils",
+    "description": "An utility PHP library to simplify interaction with Bitrix Framework classes",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Yognevoy\\BXUtils\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Yaroslav Ognevoy",
+            "email": "ya.ognevoy@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.4 || ^8.0"
+    }
+}
