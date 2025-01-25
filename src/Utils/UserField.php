@@ -2,114 +2,73 @@
 
 namespace Yognevoy\BXUtils\Utils;
 
-use Bitrix\Main\ArgumentException;
-use Bitrix\Main\ObjectPropertyException;
-use Bitrix\Main\SystemException;
+use Bitrix\Main\UserFieldTable;
 
 class UserField
 {
+    const KEY_VALUE = 'VALUE';
+    const KEY_XML_ID = 'XML_ID';
+
     static array $codeMap = [];
 
     /**
      * Returns a list of values for user field with the list type.
      *
-     * @param array $userFieldCode - An array of character codes of user fields.
-     * @param bool $indexById
-     * @param string $entityId
+     * @param $fieldId - field ID
+     * @param string $entityId - entity UF_ID
+     * @param string $key - the key, whose value will be assigned to the elements of the array. XML_ID | VALUE
      * @return array
-     * @throws ArgumentException
-     * @throws ObjectPropertyException
-     * @throws SystemException
      */
-    public static function getUserFieldEnumListByCode(array $userFieldCode, bool $indexById = false, string $entityId = 'empty'): array
+    public static function getEnumValues($fieldId, string $entityId, string $key): array
     {
-        self::fetch($userFieldCode, $entityId);
-        $out = [];
-        foreach ($userFieldCode as $key) {
-            foreach (self::$codeMap[$entityId][$key] as $value) {
-                if ($indexById) {
-                    $out[$key][$value['ID']] = $value['VALUE'];
-                } else {
-                    $out[$key][$value['VALUE']] = $value['ID'];
-                }
+        if (!is_array($fieldId)) {
+            $fieldId = [$fieldId];
+        }
+
+        self::fetch($fieldId, $entityId);
+
+        $result = [];
+        foreach ($fieldId as $id) {
+            foreach (self::$codeMap[$entityId][$id] as $field) {
+                $result[$id][$field['ID']] = $field[$key];
             }
         }
-        return $out;
+        if (count($result) <= 1) {
+            $result = current($result);
+        }
+        return $result;
     }
 
     /**
-     * Returns a list of xml id's for user field with the list type.
-     *
-     * @param array $userFieldCode - An array of character codes of user fields.
-     * @param bool $indexById
-     * @param string $entityId
-     * @return array
-     * @throws ArgumentException
-     * @throws ObjectPropertyException
-     * @throws SystemException
-     */
-    public static function getUserFieldEnumXmlListByCode(array $userFieldCode, bool $indexById = false, string $entityId = 'empty'): array
-    {
-        self::fetch($userFieldCode, $entityId);
-        $out = [];
-        foreach ($userFieldCode as $key) {
-            foreach (self::$codeMap[$entityId][$key] as $value) {
-                if ($indexById) {
-                    $out[$key][$value['ID']] = $value['XML_ID'];
-                } else {
-                    $out[$key][$value['XML_ID']] = $value['ID'];
-                }
-            }
-        }
-        return $out;
-    }
-
-    /**
-     * @param array $userFieldCode
+     * @param array $fieldIds
      * @param string $entityId
      * @return void
-     * @throws ArgumentException
-     * @throws ObjectPropertyException
-     * @throws SystemException
      */
-    private static function fetch(array $userFieldCode, string $entityId): void
+    private static function fetch(array $fieldIds, string $entityId): void
     {
-        $userFieldCodeFetch = array_filter($userFieldCode, function($value) use($entityId){
-            if (!isset(self::$codeMap[$entityId])) {
-                self::$codeMap[$entityId] = [];
-            }
-            return !array_key_exists($value, self::$codeMap[$entityId]);
-        });
+        $arFields = UserFieldTable::getList([
+            'filter' => [
+                '=ENTITY_ID' => $entityId,
+                '=FIELD_NAME' => $fieldIds
+            ],
+            'select' => [
+                'ID',
+                'FIELD_NAME'
+            ]
+        ])->fetchAll();
 
-        if (!empty($userFieldCodeFetch)) {
-            $codeMap = [];
-            $out = [];
-            $filter = [
-                '=FIELD_NAME' => $userFieldCodeFetch
-            ];
-            if (!empty($entityId) && $entityId != 'empty') {
-                $filter['ENTITY_ID'] = $entityId;
-            }
-            $rs = \Bitrix\Main\UserFieldTable::getList([
-                'filter' => $filter
-            ]);
-            while ($ob = $rs->Fetch()) {
-                $codeMap[$ob['ID']] = $ob['FIELD_NAME'];
-            }
-            if (empty($codeMap)) {
+        foreach ($arFields as $field) {
+            if (self::$codeMap[$entityId][$field['FIELD_NAME']]) {
                 return;
             }
-            $rs = \CUserFieldEnum::GetList(['ENTITY_ID' => 'ASC'], [
-                'USER_FIELD_ID' => array_keys($codeMap),
+            self::$codeMap[$entityId][$field['FIELD_NAME']] = [];
+
+            $dbResult = \CUserFieldEnum::GetList([], [
+                'USER_FIELD_ID' => $field['ID']
             ]);
-            while ($ob = $rs->Fetch()) {
-                $code = $codeMap[$ob['USER_FIELD_ID']];
-                $out[$code][] = $ob;
+            while ($res = $dbResult->fetch()) {
+                self::$codeMap[$entityId][$field['FIELD_NAME']][] = $res;
             }
-            foreach ($out as $key => $value) {
-                self::$codeMap[$entityId][$key] = $value;
-            }
-            unset($out);
         }
     }
 }
