@@ -16,7 +16,7 @@ class UserField
      *
      * @param $fieldId - field ID
      * @param string $entityId - entity UF_ID
-     * @param string $key - the key, whose value will be assigned to the elements of the array. XML_ID | VALUE
+     * @param string $key - поле, значение которого будет записано в ключ элементов массива. XML_ID | VALUE
      * @return array
      */
     public static function getEnumValues($fieldId, string $entityId, string $key): array
@@ -30,7 +30,7 @@ class UserField
         $result = [];
         foreach ($fieldId as $id) {
             foreach (self::$codeMap[$entityId][$id] as $field) {
-                $result[$id][$field['ID']] = $field[$key];
+                $result[$id][$field[$key]] = $field['ID'];
             }
         }
         if (count($result) <= 1) {
