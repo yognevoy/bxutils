@@ -20,7 +20,7 @@ class Dynamic
      */
     static function getEntityTypeIdByCode(string $code) : int
     {
-        self::getData();
+        self::fetchData();
         foreach (self::$entityTypes as $entityType) {
             if ($entityType['CODE'] == $code) {
                 return $entityType['ENTITY_TYPE_ID'];
@@ -38,7 +38,7 @@ class Dynamic
      */
     static function getEntityTypeIdByName(string $code) : int
     {
-        self::getData();
+        self::fetchData();
         foreach (self::$entityTypes as $entityType) {
             if ($entityType['NAME'] == $code) {
                 return $entityType['ENTITY_TYPE_ID'];
@@ -56,7 +56,7 @@ class Dynamic
      */
     public static function getEntityByEntityTypeId(int $entityTypeId): array
     {
-        self::getData();
+        self::fetchData();
         if (empty(self::$entityTypes[$entityTypeId])) {
             throw new EntityTypeNotFoundException($entityTypeId);
         }
@@ -67,7 +67,7 @@ class Dynamic
      * @return void
      * @throws ModuleNotIncludedException
      */
-    private static function getData(): void
+    private static function fetchData(): void
     {
         if (!Loader::includeModule('crm')) {
             throw new ModuleNotIncludedException('crm');
