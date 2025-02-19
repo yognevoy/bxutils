@@ -33,7 +33,7 @@ class UserField
                 $result[$id][$field[$key]] = $field['ID'];
             }
         }
-        if (count($result) <= 1) {
+        if (count($result) == 1) {
             $result = current($result);
         }
         return $result;
