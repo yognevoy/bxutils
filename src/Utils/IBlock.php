@@ -25,17 +25,25 @@ class IBlock
             throw new ModuleNotIncludedException('iblock');
         }
 
-        if (isset(self::$iblocks[$code])) {
-            return self::$iblocks[$code];
-        }
+        self::fetch($code);
 
-        self::$iblocks[$code] = IblockTable::getList([
-            'filter' => ['=CODE' => $code],
-            'select' => ['ID']
-        ])->fetch()['ID'];
         if (empty(self::$iblocks[$code])) {
             throw new IBlockNotFoundException($code);
         }
         return self::$iblocks[$code];
+    }
+
+    /**
+     * @param string $code
+     * @return void
+     */
+    public static function fetch(string $code): void
+    {
+        if (!isset(self::$iblocks[$code])) {
+            self::$iblocks[$code] = IblockTable::getList([
+                'filter' => ['=CODE' => $code],
+                'select' => ['ID']
+            ])->fetch()['ID'];
+        }
     }
 }
