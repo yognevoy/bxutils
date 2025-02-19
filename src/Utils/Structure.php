@@ -199,6 +199,58 @@ class Structure
     }
 
     /**
+     * Returns list of departments.
+     *
+     * @param int $departmentId - parent department id. If empty, returns all departments.
+     * @return array
+     */
+    public static function getDepartments(int $departmentId = 0): array
+    {
+        $departments = [];
+
+        $filter = ['IBLOCK_ID' => static::getStructureIBlockID()];
+
+        if (!empty($departmentId)) {
+            $dbRes = CIBlockSection::GetList(
+                [],
+                [
+                    'IBLOCK_ID' => static::getStructureIBlockID(),
+                    'ID' => $departmentId
+                ],
+                false,
+                ['ID']
+            );
+
+            if ($department = $dbRes->fetch()) {
+                $filter['SECTION_ID'] = $department['ID'];
+            } else {
+                return [];
+            }
+        }
+
+        $select = [
+            'ID',
+            'NAME',
+            'CODE',
+            'IBLOCK_SECTION_ID',
+            'UF_HEAD'
+        ];
+
+        $dbRes = CIBlockSection::GetList(
+            [],
+            $filter,
+            false,
+            $select
+        );
+
+        while ($res = $dbRes->Fetch()) {
+            $departments[] = $res;
+        }
+
+        return $departments;
+    }
+
+    /**
      * Returns department structure iBlock ID.
      *
      * @return int
