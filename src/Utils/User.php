@@ -88,7 +88,29 @@ class User
     }
 
     /**
-     * Returns user view HTML
+     * Returns user link view.
+     *
+     * @param int $userId
+     * @return string
+     */
+    public static function getUserView(int $userId): string
+    {
+        if (!empty($userId)) {
+            $user = UserTable::getRow([
+                "filter" => [
+                    "ID" => $userId,
+                ],
+                "select" => [
+                    "NAME", "LAST_NAME", "LOGIN",
+                ],
+            ]);
+            return '[<a href="/bitrix/admin/user_edit.php?ID=' . $userId . '">' . $userId . '</a>] (' . $user['LOGIN'] . ') ' . $user['NAME'] . ' ' . $user['LAST_NAME'];
+        }
+        return '';
+    }
+
+    /**
+     * Returns user view HTML.
      *
      * @param int $userId
      * @return string
