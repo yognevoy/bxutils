@@ -84,9 +84,11 @@ class UrlResolver
      */
     public function isDealList(?string $url = null): bool
     {
+        $url = $url ?: static::getCurrentUrl();
         if (empty($url)) {
-            $url = static::getCurrentUrl();
+            return false;
         }
+
         return static::matchOne([
             '#^/crm/deal/list/#',
             '#^/crm/deal/category/#',
@@ -196,8 +198,9 @@ class UrlResolver
      */
     protected function isEntityList(int $entityTypeId, ?string $url = null): bool
     {
+        $url = $url ?: static::getCurrentUrl();
         if (empty($url)) {
-            $url = static::getCurrentUrl();
+            return false;
         }
 
         $sections = $this->getListSections();
@@ -218,8 +221,9 @@ class UrlResolver
      */
     protected function isEntityDetail(int $entityTypeId, ?string $url = null): bool
     {
+        $url = $url ?: static::getCurrentUrl();
         if (empty($url)) {
-            $url = static::getCurrentUrl();
+            return false;
         }
 
         $sections = $this->getDetailSections();
@@ -384,12 +388,16 @@ class UrlResolver
     /**
      * Returns the current URL.
      *
-     * @return string
+     * @return string|null
      */
-    protected static function getCurrentUrl(): string
+    protected static function getCurrentUrl(): ?string
     {
         $request = \Bitrix\Main\Application::getInstance()->getContext()->getRequest();
-        return $request->getRequestUri();
+        $url = $request->getRequestUri();
+        if ($url) {
+            return $url;
+        }
+        return null;
     }
 
     /**
