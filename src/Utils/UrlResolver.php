@@ -7,6 +7,13 @@ use Bitrix\Crm\Model\Dynamic\TypeTable;
 use Bitrix\Main\Loader;
 use CCrmOwnerType;
 
+/*
+ * Example of usage:
+ *
+ * if (UrlResolver::getInstance()->isCompanyDetail()) {
+ *     Extension::load('vendor.extname');
+ * }
+*/
 class UrlResolver
 {
     /**
