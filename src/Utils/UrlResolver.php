@@ -4,6 +4,7 @@ namespace Yognevoy\BXUtils\Utils;
 
 use Bitrix\Crm\Integration\IntranetManager;
 use Bitrix\Crm\Model\Dynamic\TypeTable;
+use Bitrix\Main\HttpRequest;
 use Bitrix\Main\Loader;
 use CCrmOwnerType;
 
@@ -400,9 +401,11 @@ class UrlResolver
     protected static function getCurrentUrl(): ?string
     {
         $request = \Bitrix\Main\Application::getInstance()->getContext()->getRequest();
-        $url = $request->getRequestUri();
-        if ($url) {
-            return $url;
+        if ($request instanceof HttpRequest) {
+            $url = $request->getRequestUri();
+            if ($url) {
+                return $url;
+            }
         }
         return null;
     }
