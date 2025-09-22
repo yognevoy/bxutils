@@ -8,6 +8,9 @@ use Bitrix\Main\HttpRequest;
 use Bitrix\Main\Loader;
 use CCrmOwnerType;
 
+Loader::includeModule('crm');
+Loader::includeModule('intranet');
+
 /*
  * Example of usage:
  *
@@ -63,9 +66,6 @@ class UrlResolver
 
     protected function __construct()
     {
-        Loader::includeModule('crm');
-        Loader::includeModule('intranet');
-
         $this->sections = $this->loadSections();
     }
 
