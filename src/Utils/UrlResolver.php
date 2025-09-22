@@ -198,6 +198,63 @@ class UrlResolver
     }
 
     /**
+     * Returns true if the URL is a tasks list page.
+     *
+     * @param string|null $url
+     * @return bool
+     */
+    public function isTasksList(?string $url = null): bool
+    {
+        $url = $url ?: static::getCurrentUrl();
+        if (empty($url)) {
+            return false;
+        }
+
+        return static::match(
+            '#^/company/personal/user/\d+/tasks/?/$#',
+            $url
+        );
+    }
+
+    /**
+     * Returns true if the URL is a task view page.
+     *
+     * @param string|null $url
+     * @return bool
+     */
+    public function isTaskView(?string $url = null): bool
+    {
+        $url = $url ?: static::getCurrentUrl();
+        if (empty($url)) {
+            return false;
+        }
+
+        return static::match(
+            '#^/company/personal/user/\d+/tasks/task/view/\d+/?/#',
+            $url
+        );
+    }
+
+    /**
+     * Returns true if the URL is a task edit page.
+     *
+     * @param string|null $url
+     * @return bool
+     */
+    public function isTaskEdit(?string $url = null): bool
+    {
+        $url = $url ?: static::getCurrentUrl();
+        if (empty($url)) {
+            return false;
+        }
+
+        return static::match(
+            '#^/company/personal/user/\d+/tasks/task/edit/\d+/?/#',
+            $url
+        );
+    }
+
+    /**
      * Returns true if the URL is a specified entity list page.
      *
      * @param int $entityTypeId Entity type ID
